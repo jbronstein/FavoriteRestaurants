@@ -18,19 +18,26 @@ public class RemindersActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.reminders, menu);
+        getMenuInflater().inflate(R.menu.reminders_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+
+        switch (item.getItemId()){
+            case R.id.action_new:
+                //create new Reminder
+                return true;
+
+            case R.id.action_exit:
+                finish();
+                return true;
+
+            default:
+                return false;
+
+
         }
-        return super.onOptionsItemSelected(item);
     }
 }
