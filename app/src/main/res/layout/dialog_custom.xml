@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/custom_root_layout"
+              android:layout_width="300dp"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+              android:background="@color/green"
+
+    >
+    <TextView
+        android:text="New Reminder:"
+        android:id="@+id/custom_title"
+        android:layout_width="fill_parent"
+        android:textSize="24sp"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:layout_height="60dp"
+        android:textColor="@color/white"
+        />
+
+    <EditText
+        android:gravity="start"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:background="@color/light_grey"
+        android:textColor="@color/black"
+        android:layout_margin="4dp"
+        android:id="@+id/custom_edit_reminder">
+        <requestFocus/>
+    </EditText>
+
+
+    <CheckBox
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:text="Important"
+        android:paddingLeft="32dp"
+        android:textColor="@color/white"
+        android:background="@color/black"
+        android:layout_margin="4dp"
+        android:id="@+id/custom_check_box"
+        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <Button
+            android:id="@+id/custom_button_cancel"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="60dp"
+
+            android:text="Cancel"
+            android:textColor="@color/white"
+
+
+            />
+        <Button
+            android:id="@+id/custom_button_commit"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:layout_height="60dp"
+
+            android:text="Commit"
+            android:textColor="@color/white"
+
+
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
