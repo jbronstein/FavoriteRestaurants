@@ -18,6 +18,7 @@
         android:textColor="@color/white"
         />
 
+
     <EditText
         android:gravity="start"
         android:layout_width="fill_parent"
