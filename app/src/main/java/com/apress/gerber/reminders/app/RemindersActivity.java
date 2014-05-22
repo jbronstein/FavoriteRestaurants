@@ -1,5 +1,7 @@
 package com.apress.gerber.reminders.app;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -7,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -73,11 +76,40 @@ public class RemindersActivity extends ActionBarActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(RemindersActivity.this, "clicked " + position, Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> parent, View view, int masterListPosition, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(RemindersActivity.this);
+                ListView modeList = new ListView(RemindersActivity.this);
+                String[] stringArray = new String[] { "Edit Reminder", "Delete Reminder" };
+                ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(RemindersActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, stringArray);
+                modeList.setAdapter(modeAdapter);
+                builder.setView(modeList);
+                final Dialog dialog = builder.create();
+                dialog.show();
+                modeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                        //edit reminder
+                        if (position == 0){
+
+                            Toast.makeText(RemindersActivity.this, "edit", Toast.LENGTH_SHORT).show();
+
+                            //delete reminder
+                        } else {
+
+                            Toast.makeText(RemindersActivity.this, "delete", Toast.LENGTH_SHORT).show();
+
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+
             }
         });
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
