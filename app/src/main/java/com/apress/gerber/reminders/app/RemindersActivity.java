@@ -1,9 +1,10 @@
 package com.apress.gerber.reminders.app;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 
@@ -17,6 +18,19 @@ public class RemindersActivity extends ActionBarActivity {
         setContentView(R.layout.activity_reminders_layout);
 
         mListView = (ListView) findViewById(R.id.reminders_list_view);
+        //Mediates model and view. This is the controller
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                //context
+                this,
+                //layout (view)
+                R.layout.reminders_row,
+                //row (view)
+                R.id.row_text,
+                //data (model) with bogus data to test our listview
+                new String[]{"first record", "second record", "third record"});
+
+        mListView.setAdapter(arrayAdapter);
+
     }
 
 
