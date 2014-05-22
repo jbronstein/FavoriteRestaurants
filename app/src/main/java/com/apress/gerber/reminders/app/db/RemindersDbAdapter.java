@@ -151,6 +151,28 @@ public class RemindersDbAdapter {
 
     }
 
+    public void insertSomeReminders() {
+
+
+        createReminder("Buy Learn Android Studio by Gerber", true);
+        createReminder("Send Dad birthday gift", false);
+        createReminder("Anniversary on Friday - dinner", false);
+        createReminder("String squash racket", false);
+        createReminder("Shovel and salt walkways", false);
+        createReminder("Prepare Advanced Android syllabus", true);
+        createReminder("Buy new office chair", false);
+        createReminder("Call Auto-body shop for quote", false);
+        createReminder("Renew membership to Costco", false);
+        createReminder("Buy new Galaxy 5 Android phone", true);
+        createReminder("Sell old HTC Android phone - auction", false);
+        createReminder("Buy new paddles for kayaks", false);
+        createReminder("Call accountant about tax returns", false);
+        createReminder("Buy 300,000 shares of Google", false);
+        createReminder("Call the Dalai Lama back", true);
+
+
+    }
+
 
 
     //static inner class

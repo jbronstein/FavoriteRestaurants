@@ -28,6 +28,13 @@ public class RemindersActivity extends ActionBarActivity {
         mDbAdapter = new RemindersDbAdapter(this);
         mDbAdapter.open();
 
+        if (savedInstanceState == null) {
+            //Clean all data
+            mDbAdapter.deleteAllReminders();
+            //Add some data
+            mDbAdapter.insertSomeReminders();
+        }
+
         Cursor cursor = mDbAdapter.fetchAllReminders();
 
         //from columns defined in the db
@@ -85,5 +92,17 @@ public class RemindersActivity extends ActionBarActivity {
 
 
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mDbAdapter.close();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDbAdapter.open();
     }
 }
