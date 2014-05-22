@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.apress.gerber.reminders.app.db.RemindersDbAdapter;
 import com.apress.gerber.reminders.app.db.RemindersSimpleCursorAdapter;
@@ -23,6 +26,7 @@ public class RemindersActivity extends ActionBarActivity {
         setContentView(R.layout.activity_reminders_layout);
 
         mListView = (ListView) findViewById(R.id.reminders_list_view);
+        mListView.setDivider(null);
 
 
         mDbAdapter = new RemindersDbAdapter(this);
@@ -65,8 +69,15 @@ public class RemindersActivity extends ActionBarActivity {
         //the cursorAdapter (controller) is now updating the listView (view) with data from the db (model)
         mListView.setAdapter(mCursorAdapter);
 
-    }
+        //when we click an individual item in the listview
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(RemindersActivity.this, "clicked " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
