@@ -1,12 +1,14 @@
-package com.apress.gerber.reminders.app;
+package com.jbronstein.profavrestos.app;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,41 +25,55 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.apress.gerber.reminders.app.db.RemindersDbAdapter;
-import com.apress.gerber.reminders.app.db.RemindersSimpleCursorAdapter;
 
+public class RestaurantActivity extends ActionBarActivity {
 
-public class RemindersActivity extends ActionBarActivity {
 
     private ListView mListView;
-    private RemindersDbAdapter mDbAdapter;
-    private RemindersSimpleCursorAdapter mCursorAdapter;
-
+    protected RestaurantDbAdapter mDbAdapter;
+    protected RestaurantSimpleCursorAdapter mCursorAdapter;
+    /*private String mName;
+    private String mCity;
+    private boolean mImp;
+    private String mPhone;
+    private String mAddress;
+    private String mUrl;
+    private String mNote;
+*/
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reminders_layout);
+        setContentView(R.layout.activity_restos_layout);
 
-        mListView = (ListView) findViewById(R.id.reminders_list_view);
+        mListView = (ListView) findViewById(R.id.restos_list_view);
         mListView.setDivider(null);
 
 
-        mDbAdapter = new RemindersDbAdapter(this);
+        mDbAdapter = new RestaurantDbAdapter(this);
         mDbAdapter.open();
+
+
 
         if (savedInstanceState == null) {
             //Clean all data
-            mDbAdapter.deleteAllReminders();
+           // mDbAdapter.deleteAllRestaurants();
             //Add some data
-            mDbAdapter.insertSomeReminders();
+           // mDbAdapter.insertSomeRestaurants();
+            Log.i("NULL INSTANCE: ", "NULL!!!!!!");
+        }
+        else {
+            Log.i("SAVED INSTANCE: ", "SAVED!!!!!!");
         }
 
-        Cursor cursor = mDbAdapter.fetchAllReminders();
+
+        Cursor cursor = mDbAdapter.fetchAllRestaurants();
 
         //from columns defined in the db
         String[] from = new String[]{
-                RemindersDbAdapter.KEY_CONTENT
+                RestaurantDbAdapter.KEY_CONTENT
+
         };
 
         //to the ids of views in the layout
@@ -65,11 +81,11 @@ public class RemindersActivity extends ActionBarActivity {
                 R.id.row_text
         };
 
-        mCursorAdapter = new RemindersSimpleCursorAdapter(
+        mCursorAdapter = new RestaurantSimpleCursorAdapter(
                 //context
-                RemindersActivity.this,
+                RestaurantActivity.this,
                 //the layout of the row
-                R.layout.reminders_row,
+                R.layout.restos_row,
                 //cursor
                 cursor,
                 //from columns defined in the db
@@ -83,15 +99,17 @@ public class RemindersActivity extends ActionBarActivity {
         //the cursorAdapter (controller) is now updating the listView (view) with data from the db (model)
         mListView.setAdapter(mCursorAdapter);
 
+
+
         //when we click an individual item in the listview
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(RemindersActivity.this);
-                ListView modeList = new ListView(RemindersActivity.this);
-                String[] stringArray = new String[] { "Edit Reminder", "Delete Reminder" };
-                ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(RemindersActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, stringArray);
+                AlertDialog.Builder builder = new AlertDialog.Builder(RestaurantActivity.this);
+                ListView modeList = new ListView(RestaurantActivity.this);
+                String[] stringArray = new String[] { "Edit", "Navigate to", "Map of", "Dial", "Yelp site", "Delete" };
+                ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(RestaurantActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, stringArray);
                 modeList.setAdapter(modeAdapter);
                 builder.setView(modeList);
                 final Dialog dialog = builder.create();
@@ -100,18 +118,18 @@ public class RemindersActivity extends ActionBarActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                        //edit reminder
+                        //edit restaurant
                         if (position == 0){
 
                             int nId = getIdFromPosition(masterListPosition);
-                            Reminder reminder = mDbAdapter.fetchReminderById(nId);
-                            fireCustomDialog(reminder);
+                            Restaurant r = mDbAdapter.fetchRestaurantById(nId);
+                            fireCustomDialog(r);
 
-                            //delete reminder
+                            //delete restaurant
                         } else {
 
-                            mDbAdapter.deleteReminderById(getIdFromPosition(masterListPosition));
-                            mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+                            mDbAdapter.deleteRestaurantById(getIdFromPosition(masterListPosition));
+                            mCursorAdapter.changeCursor(mDbAdapter.fetchAllRestaurants());
 
                         }
                         dialog.dismiss();
@@ -151,12 +169,12 @@ public class RemindersActivity extends ActionBarActivity {
                             for (int nC = mCursorAdapter.getCount() - 1; nC >= 0; nC--) {
                                 if (mListView.isItemChecked(nC)) {
 
-                                    mDbAdapter.deleteReminderById(getIdFromPosition(nC));
+                                    mDbAdapter.deleteRestaurantById(getIdFromPosition(nC));
 
                                 }
                             }
                             mode.finish();
-                            mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+                            mCursorAdapter.changeCursor(mDbAdapter.fetchAllRestaurants());
                             return true;
 
                     }
@@ -176,13 +194,13 @@ public class RemindersActivity extends ActionBarActivity {
 
 
     private int getIdFromPosition(int nPosition){
-        Cursor cursor = mDbAdapter.fetchAllReminders();
+        Cursor cursor = mDbAdapter.fetchAllRestaurants();
         cursor.move(nPosition);
-        return cursor.getInt(RemindersDbAdapter.KEY_ID_INDEX);
+        return cursor.getInt(RestaurantDbAdapter.KEY_ID_INDEX);
     }
 
 
-    private void fireCustomDialog(final Reminder reminder){
+    private void fireCustomDialog(final Restaurant restaurant){
 
 
         // custom dialog
@@ -198,10 +216,10 @@ public class RemindersActivity extends ActionBarActivity {
         LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.custom_root_layout);
 
         //this is for an edit
-        if (reminder != null){
-            textView.setText("Edit Reminder");
-            checkBox.setChecked(reminder.getImportant() == 1);
-            editCustom.setText(reminder.getContent());
+        if (restaurant != null){
+            textView.setText("Edit Restaurant");
+            checkBox.setChecked(restaurant.getImportant() == 1);
+            editCustom.setText(restaurant.getContent());
             linearLayout.setBackgroundColor(getResources().getColor(R.color.blue));
         }
 
@@ -210,27 +228,17 @@ public class RemindersActivity extends ActionBarActivity {
             public void onClick(View v) {
                 String strCustom = editCustom.getText().toString();
                 //this is for edit reminder
-                if (reminder != null) {
+                if (restaurant != null) {
 
-                    Reminder reminderEdited = new Reminder(reminder.getId(),strCustom, checkBox.isChecked() ? 1 : 0 );
-                    mDbAdapter.updateReminder(reminderEdited);
+                    Restaurant restaurantEdited = new Restaurant(restaurant.getId(),strCustom, checkBox.isChecked() ? 1 : 0, restaurant.getCity(), restaurant.getPhone(), restaurant.getAddress(), restaurant.getUrl(), restaurant.getNote() );
+                    mDbAdapter.updateRestaurant(restaurantEdited);
 
                     //this is for new reminder
                 } else {
-                    mDbAdapter.createReminder( strCustom, checkBox.isChecked());
+                    mDbAdapter.createRestaurant(strCustom, checkBox.isChecked(), "TEST", "TEST", "TEST", "TEST", "TEST");
                 }
-                mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
+                mCursorAdapter.changeCursor(mDbAdapter.fetchAllRestaurants());
                 dialog.dismiss();
-            }
-        });
-
-        Button buttonCancel = (Button) dialog.findViewById(R.id.custom_button_cancel);
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                dialog.dismiss();
-
             }
         });
 
@@ -242,7 +250,7 @@ public class RemindersActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.reminders_menu, menu);
+        getMenuInflater().inflate(R.menu.restos_menu, menu);
         return true;
     }
 
@@ -251,8 +259,11 @@ public class RemindersActivity extends ActionBarActivity {
 
         switch (item.getItemId()){
             case R.id.action_new:
-                //create new Reminder
-                fireCustomDialog(null);
+                //create new Restaurant
+                Intent i = new Intent(RestaurantActivity.this, EditRestaurantActivity.class);
+
+                startActivityForResult(i, 1);
+                //fireCustomDialog(null);
                 return true;
 
             case R.id.action_exit:
@@ -261,20 +272,64 @@ public class RemindersActivity extends ActionBarActivity {
 
             default:
                 return false;
-
-
         }
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
+        Log.i("PAUSED: ", "PAUSED");
         mDbAdapter.close();
+        super.onPause();
     }
 
     @Override
     protected void onResume() {
+        Log.i("RESUME: ", "RESUME");
         super.onResume();
         mDbAdapter.open();
     }
-}
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                mDbAdapter.open();
+
+                String name = data.getStringExtra("NAME");
+                Boolean bool = data.getExtras().getBoolean("CHECK");
+                String city = data.getStringExtra("CITY");
+                String phone = data.getStringExtra("PHONE");
+                String address = data.getStringExtra("ADDRESS");
+                String url = data.getStringExtra("YELP_URL");
+                String note = data.getStringExtra("NOTE");
+
+                mDbAdapter.createRestaurant(name, bool, city, phone, address, url, note);
+                mCursorAdapter.changeCursor(mDbAdapter.fetchAllRestaurants());
+                mCursorAdapter.notifyDataSetChanged();
+
+
+                //Log.i("RESULT: ", result);
+            }
+            if (resultCode == RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }//onActivityResult
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+
+    }
+
+
+
+

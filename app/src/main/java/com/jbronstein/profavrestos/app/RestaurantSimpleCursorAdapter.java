@@ -1,4 +1,4 @@
-package com.apress.gerber.reminders.app.db;
+package com.jbronstein.profavrestos.app;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,15 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.apress.gerber.reminders.app.R;
-
 /**
  * Created by Adam Gerber on 5/12/2014.
  * University of Chicago
  */
-public class RemindersSimpleCursorAdapter extends SimpleCursorAdapter {
+public class RestaurantSimpleCursorAdapter extends SimpleCursorAdapter {
 
-    public RemindersSimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+    public RestaurantSimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
     }
 
@@ -30,12 +28,13 @@ public class RemindersSimpleCursorAdapter extends SimpleCursorAdapter {
         super.bindView(view, context, cursor);
 
         ViewHolder holder = (ViewHolder) view.getTag();
+
         if (holder == null) {
 
             holder = new ViewHolder();
 
-            holder.colName = cursor.getColumnIndexOrThrow(RemindersDbAdapter.KEY_CONTENT);
-            holder.colImp = cursor.getColumnIndexOrThrow(RemindersDbAdapter.KEY_IMPORTANT);
+            holder.colName = cursor.getColumnIndexOrThrow(RestaurantDbAdapter.KEY_CONTENT);
+            holder.colImp = cursor.getColumnIndexOrThrow(RestaurantDbAdapter.KEY_IMPORTANT);
 
             holder.listTab =  view.findViewById(R.id.row_tab);
             holder.listText = (TextView) view.findViewById(R.id.row_text);
@@ -48,8 +47,6 @@ public class RemindersSimpleCursorAdapter extends SimpleCursorAdapter {
             holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.orange));
         else
             holder.listTab.setBackgroundColor(context.getResources().getColor(R.color.green));
-
-
 
     }
 

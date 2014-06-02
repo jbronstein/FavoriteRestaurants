@@ -8,7 +8,7 @@
 
     >
     <TextView
-        android:text="New Reminder:"
+        android:text="New Restaurant:"
         android:id="@+id/custom_title"
         android:layout_width="fill_parent"
         android:textSize="24sp"

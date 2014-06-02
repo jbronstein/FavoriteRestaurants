@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context="com.apress.gerber.reminders.app.RemindersActivity">
+    tools:context="com.jbronstein.profavrestos.app.RestaurantActivity">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/reminders_list_view"
+        android:id="@+id/restos_list_view"
        />
 
 </RelativeLayout>
