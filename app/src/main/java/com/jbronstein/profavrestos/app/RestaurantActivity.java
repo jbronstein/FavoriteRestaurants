@@ -3,8 +3,10 @@ package com.jbronstein.profavrestos.app;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -27,19 +29,11 @@ import android.widget.TextView;
 
 
 public class RestaurantActivity extends ActionBarActivity {
-
-
     private ListView mListView;
     protected RestaurantDbAdapter mDbAdapter;
     protected RestaurantSimpleCursorAdapter mCursorAdapter;
-    /*private String mName;
-    private String mCity;
-    private boolean mImp;
-    private String mPhone;
-    private String mAddress;
-    private String mUrl;
-    private String mNote;
-*/
+
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 
     @Override
@@ -49,31 +43,14 @@ public class RestaurantActivity extends ActionBarActivity {
 
         mListView = (ListView) findViewById(R.id.restos_list_view);
         mListView.setDivider(null);
-
-
         mDbAdapter = new RestaurantDbAdapter(this);
         mDbAdapter.open();
-
-
-
-        if (savedInstanceState == null) {
-            //Clean all data
-           // mDbAdapter.deleteAllRestaurants();
-            //Add some data
-           // mDbAdapter.insertSomeRestaurants();
-            Log.i("NULL INSTANCE: ", "NULL!!!!!!");
-        }
-        else {
-            Log.i("SAVED INSTANCE: ", "SAVED!!!!!!");
-        }
-
 
         Cursor cursor = mDbAdapter.fetchAllRestaurants();
 
         //from columns defined in the db
         String[] from = new String[]{
                 RestaurantDbAdapter.KEY_CONTENT
-
         };
 
         //to the ids of views in the layout
@@ -99,8 +76,6 @@ public class RestaurantActivity extends ActionBarActivity {
         //the cursorAdapter (controller) is now updating the listView (view) with data from the db (model)
         mListView.setAdapter(mCursorAdapter);
 
-
-
         //when we click an individual item in the listview
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -108,7 +83,7 @@ public class RestaurantActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(RestaurantActivity.this);
                 ListView modeList = new ListView(RestaurantActivity.this);
-                String[] stringArray = new String[] { "Edit", "Navigate to", "Map of", "Dial", "Yelp site", "Delete" };
+                String[] stringArray = new String[] { "Edit", "Navigate to", "Map of", "Dial", "Yelp site", "Notes", "Delete" };
                 ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(RestaurantActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, stringArray);
                 modeList.setAdapter(modeAdapter);
                 builder.setView(modeList);
@@ -117,26 +92,60 @@ public class RestaurantActivity extends ActionBarActivity {
                 modeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        int nId = getIdFromPosition(masterListPosition);
+                        Restaurant r = mDbAdapter.fetchRestaurantById(nId);
 
                         //edit restaurant
                         if (position == 0){
-
-                            int nId = getIdFromPosition(masterListPosition);
-                            Restaurant r = mDbAdapter.fetchRestaurantById(nId);
+                            Intent editRestaurant = new Intent(RestaurantActivity.this, EditRestaurantActivity.class);
+                            editRestaurant.putExtra("Restaurant", r);
+                            startActivity(editRestaurant);
+                        }
+                        //NavigateTo
+                        else if (position == 1) {
+                            String navAddress = r.getAddress();
+                            String navCity = r.getCity();
+                            String nav = "google.navigation:q=" + navAddress + " " + navCity;
+                            nav = nav.replace(' ','+');
+                            Intent intentNavTo = new Intent(Intent.ACTION_VIEW, Uri.parse(nav));
+                            startActivity(intentNavTo);
+                        }
+                        //MapOf
+                        else if (position == 2) {
+                                String strAddress = r.getAddress();
+                                String strCity = r.getCity();
+                                String mapUrl = "geo:0,0?q=" + strAddress + " " + strCity;
+                                mapUrl = mapUrl.replace(' ', '+');
+                                Log.i("MapOf: ", mapUrl);
+                                Intent intentMapOf = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(mapUrl));
+                                startActivity(intentMapOf);
+                        }
+                        //Dial
+                        else if (position == 3) {
+                            String phone = r.getPhone();
+                            Intent intentDial = new Intent(Intent.ACTION_CALL);
+                            intentDial.setData(Uri.parse("tel:"+ phone));
+                            startActivity(intentDial);
+                        }
+                        //Yelp
+                        else if (position == 4) {
+                            String strYelpUrl = r.getUrl();
+                            Intent intentYelp = new Intent(Intent.ACTION_VIEW);
+                            intentYelp.setData(Uri.parse(strYelpUrl));
+                            startActivity(intentYelp);
+                        }
+                        //Add Note
+                        else if (position == 5) {
                             fireCustomDialog(r);
-
-                            //delete restaurant
-                        } else {
-
+                        }
+                        //Delete Resto
+                        else if (position == 6) {
                             mDbAdapter.deleteRestaurantById(getIdFromPosition(masterListPosition));
                             mCursorAdapter.changeCursor(mDbAdapter.fetchAllRestaurants());
-
                         }
                         dialog.dismiss();
                     }
                 });
-
-
             }
         });
 
@@ -191,8 +200,6 @@ public class RestaurantActivity extends ActionBarActivity {
         }
     }
 
-
-
     private int getIdFromPosition(int nPosition){
         Cursor cursor = mDbAdapter.fetchAllRestaurants();
         cursor.move(nPosition);
@@ -200,6 +207,7 @@ public class RestaurantActivity extends ActionBarActivity {
     }
 
 
+    //Updated CustomDialog to Provide Note functionality
     private void fireCustomDialog(final Restaurant restaurant){
 
 
@@ -210,39 +218,34 @@ public class RestaurantActivity extends ActionBarActivity {
 
 
         TextView textView = (TextView) dialog.findViewById(R.id.custom_title);
-        final EditText editCustom = (EditText) dialog.findViewById(R.id.custom_edit_reminder);
-        Button buttonCustom = (Button) dialog.findViewById(R.id.custom_button_commit);
-        final CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.custom_check_box);
-        LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.custom_root_layout);
+        final EditText editCustom = (EditText) dialog.findViewById(R.id.custom_note);
+        Button buttonCancel = (Button) dialog.findViewById(R.id.custom_button_cancel);
+        Button buttonSave = (Button) dialog.findViewById(R.id.custom_button_commit);
+       // final CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.custom_check_box);
+       LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.custom_root_layout);
 
-        //this is for an edit
-        if (restaurant != null){
-            textView.setText("Edit Restaurant");
-            checkBox.setChecked(restaurant.getImportant() == 1);
-            editCustom.setText(restaurant.getContent());
-            linearLayout.setBackgroundColor(getResources().getColor(R.color.blue));
-        }
+        textView.setText("Notes for: " + restaurant.getContent() + " in " + restaurant.getCity());
+            //checkBox.setChecked(restaurant.getImportant() == 1);
+        editCustom.setText(restaurant.getNote());
+        linearLayout.setBackgroundColor(getResources().getColor(R.color.black));
 
-        buttonCustom.setOnClickListener(new View.OnClickListener() {
+        buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String strCustom = editCustom.getText().toString();
-                //this is for edit reminder
-                if (restaurant != null) {
-
-                    Restaurant restaurantEdited = new Restaurant(restaurant.getId(),strCustom, checkBox.isChecked() ? 1 : 0, restaurant.getCity(), restaurant.getPhone(), restaurant.getAddress(), restaurant.getUrl(), restaurant.getNote() );
-                    mDbAdapter.updateRestaurant(restaurantEdited);
-
-                    //this is for new reminder
-                } else {
-                    mDbAdapter.createRestaurant(strCustom, checkBox.isChecked(), "TEST", "TEST", "TEST", "TEST", "TEST");
-                }
+                restaurant.setNote(strCustom);
+                mDbAdapter.updateRestaurant(restaurant);
                 mCursorAdapter.changeCursor(mDbAdapter.fetchAllRestaurants());
                 dialog.dismiss();
             }
         });
 
-
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
         dialog.show();
 
     }
@@ -261,7 +264,6 @@ public class RestaurantActivity extends ActionBarActivity {
             case R.id.action_new:
                 //create new Restaurant
                 Intent i = new Intent(RestaurantActivity.this, EditRestaurantActivity.class);
-
                 startActivityForResult(i, 1);
                 //fireCustomDialog(null);
                 return true;
@@ -278,8 +280,8 @@ public class RestaurantActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         Log.i("PAUSED: ", "PAUSED");
-        mDbAdapter.close();
         super.onPause();
+        mDbAdapter.close();
     }
 
     @Override
@@ -302,11 +304,11 @@ public class RestaurantActivity extends ActionBarActivity {
                 String address = data.getStringExtra("ADDRESS");
                 String url = data.getStringExtra("YELP_URL");
                 String note = data.getStringExtra("NOTE");
+                String image = data.getStringExtra("IMAGE");
 
-                mDbAdapter.createRestaurant(name, bool, city, phone, address, url, note);
+                mDbAdapter.createRestaurant(name, bool, city, phone, address, url, note, image);
                 mCursorAdapter.changeCursor(mDbAdapter.fetchAllRestaurants());
                 mCursorAdapter.notifyDataSetChanged();
-
 
                 //Log.i("RESULT: ", result);
             }

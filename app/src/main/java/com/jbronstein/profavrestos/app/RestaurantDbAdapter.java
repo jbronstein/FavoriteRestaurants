@@ -25,6 +25,7 @@ public class RestaurantDbAdapter {
     public static final String KEY_ADDRESS = "address";
     public static final String KEY_YELPURL = "yelp_url";
     public static final String KEY_NOTE = "note";
+    public static final String KEY_IMAGE = "image";
 
     //these are the corresponding indices
     public static final int KEY_ID_INDEX = 0;
@@ -35,6 +36,7 @@ public class RestaurantDbAdapter {
     public static final int KEY_ADDRESS_INDEX = 5;
     public static final int KEY_YELPURL_INDEX = 6;
     public static final int KEY_NOTE_INDEX = 7;
+    public static final int KEY_IMAGE_INDEX = 8;
 
     //used for logging
     private static final String TAG = "RestaurantDbAdapter";
@@ -45,7 +47,7 @@ public class RestaurantDbAdapter {
 
     private static final String DATABASE_NAME = "dba_resto";
     private static final String TABLE_NAME = "tbl_resto";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 8;
 
 
     private final Context mCtx;
@@ -59,7 +61,8 @@ public class RestaurantDbAdapter {
                     KEY_PHONE + " TEXT, " +
                     KEY_ADDRESS + " TEXT, " +
                     KEY_YELPURL + " TEXT, " +
-                    KEY_NOTE + " TEXT);";
+                    KEY_NOTE + " TEXT, " +
+                    KEY_IMAGE + " TEXT);";
 
 
     public RestaurantDbAdapter(Context ctx) {
@@ -82,7 +85,7 @@ public class RestaurantDbAdapter {
 
     //CREATE
     //note that the id will be created for you automatically
-    public void createRestaurant(String name, boolean important, String city, String phone, String address, String yelp_url, String notes) {
+    public void createRestaurant(String name, boolean important, String city, String phone, String address, String yelp_url, String notes, String image) {
 
 
         ContentValues values = new ContentValues();
@@ -93,6 +96,7 @@ public class RestaurantDbAdapter {
         values.put(KEY_ADDRESS, address);
         values.put(KEY_YELPURL, yelp_url);
         values.put(KEY_NOTE, notes);
+        values.put(KEY_IMAGE, image);
 
         mDb.insert(TABLE_NAME, null, values);
         Log.i("INSERTED: ", values.toString());
@@ -108,6 +112,7 @@ public class RestaurantDbAdapter {
         values.put(KEY_ADDRESS, restaurant.getAddress());
         values.put(KEY_YELPURL, restaurant.getUrl());
         values.put(KEY_NOTE, restaurant.getNote());
+        values.put(KEY_IMAGE, restaurant.getImage());
 
         // Inserting Row
         return mDb.insert(TABLE_NAME, null, values);
@@ -119,10 +124,9 @@ public class RestaurantDbAdapter {
     public Restaurant fetchRestaurantById(int id) {
 
         Cursor cursor = mDb.query(TABLE_NAME, new String[]{KEY_ID,
-                        KEY_CONTENT, KEY_IMPORTANT, KEY_CITY, KEY_PHONE, KEY_ADDRESS, KEY_YELPURL, KEY_NOTE}, KEY_ID + "=?",
+                        KEY_CONTENT, KEY_IMPORTANT, KEY_CITY, KEY_PHONE, KEY_ADDRESS, KEY_YELPURL, KEY_NOTE, KEY_IMAGE}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null
         );
-
 
         if (cursor != null) {
             cursor.moveToFirst();
@@ -136,8 +140,8 @@ public class RestaurantDbAdapter {
                 cursor.getString(4),
                 cursor.getString(5),
                 cursor.getString(6),
-                cursor.getString(7)
-
+                cursor.getString(7),
+                cursor.getString(8)
         );
 
 
@@ -195,11 +199,10 @@ public class RestaurantDbAdapter {
 
     public void insertSomeRestaurants() {
 
-        createRestaurant("Sable", true, "Chicago", "+1-312-755-9704", "505 N State St", "http://www.yelp.com/biz/sable-chicago", "LOVE IT");
-        createRestaurant("Yolk", false, "Chicago", "+1-312-787-2277", "747 N Wells", "http://www.yelp.com/biz/yolk-river-north-chicago-2", "MEDIOCRE");
-        createRestaurant("Medici On 57th", false, "Chicago", "+1-773-667-7394", "1327 E 57th St", "http://www.yelp.com/biz/medici-on-57th-chicago", "Good Coffee");
+        createRestaurant("Sable", true, "Chicago", "+1-312-755-9704", "505 N State St", "http://www.yelp.com/biz/sable-chicago", "LOVE IT", "");
+        createRestaurant("Yolk", false, "Chicago", "+1-312-787-2277", "747 N Wells", "http://www.yelp.com/biz/yolk-river-north-chicago-2", "MEDIOCRE", "");
+        createRestaurant("Medici On 57th", false, "Chicago", "+1-773-667-7394", "1327 E 57th St", "http://www.yelp.com/biz/medici-on-57th-chicago", "Good Coffee", "");
     }
-
 
 
     //static inner class

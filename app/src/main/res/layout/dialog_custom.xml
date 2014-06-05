@@ -8,10 +8,10 @@
 
     >
     <TextView
-        android:text="New Restaurant:"
+        android:text="Notes for:"
         android:id="@+id/custom_title"
         android:layout_width="fill_parent"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:gravity="center_vertical"
         android:padding="10dp"
         android:layout_height="60dp"
@@ -22,25 +22,13 @@
     <EditText
         android:gravity="start"
         android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:background="@color/light_grey"
+        android:layout_height="400dp"
+        android:background="@color/white"
         android:textColor="@color/black"
         android:layout_margin="4dp"
-        android:id="@+id/custom_edit_reminder">
+        android:id="@+id/custom_note">
         <requestFocus/>
     </EditText>
-
-
-    <CheckBox
-        android:layout_width="fill_parent"
-        android:layout_height="30dp"
-        android:text="Important"
-        android:paddingLeft="32dp"
-        android:textColor="@color/white"
-        android:background="@color/black"
-        android:layout_margin="4dp"
-        android:id="@+id/custom_check_box"
-        />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -49,9 +37,8 @@
         <Button
             android:id="@+id/custom_button_cancel"
             android:layout_width="0dp"
-            android:layout_weight="50"
+            android:layout_weight="30"
             android:layout_height="60dp"
-
             android:text="Cancel"
             android:textColor="@color/white"
 
@@ -60,10 +47,9 @@
         <Button
             android:id="@+id/custom_button_commit"
             android:layout_width="0dp"
-            android:layout_weight="50"
+            android:layout_weight="70"
             android:layout_height="60dp"
-
-            android:text="Commit"
+            android:text="Save"
             android:textColor="@color/white"
 
 
